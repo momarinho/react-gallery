@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { auth, storage } from '../config/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { ref, listAll, getDownloadURL, uploadBytes } from 'firebase/storage';
+import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
+import { Link } from 'react-router-dom';
 
 function Header() {
   const [user] = useAuthState(auth);
@@ -58,9 +59,12 @@ function Header() {
   return (
     <div className="bg-gray-700 py-4 px-8 shadow-sm">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl text-gray-100 hover:text-blue-200">
+        <Link
+          to="/"
+          className="text-2xl text-gray-100 hover:text-blue-200 cursor-pointer"
+        >
           My Photo Gallery
-        </h1>
+        </Link>
         {user && (
           <>
             <label
