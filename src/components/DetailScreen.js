@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { deleteObject } from 'firebase/storage';
 
 import Spinner from './Spinner';
 
-function NavBar({ onBack, onResetZoom }) {
+function NavBar({ onBack, onResetZoom, onDelete }) {
   return (
     <nav className="flex justify-between items-center p-4 bg-gray-700">
       <button
@@ -30,6 +31,12 @@ function NavBar({ onBack, onResetZoom }) {
         className="px-4 py-2 bg-gray-800 text-white rounded-md cursor-pointer hover:bg-gray-600"
       >
         Reset Zoom
+      </button>
+      <button
+        onClick={onDelete}
+        className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer hover:bg-red-700"
+      >
+        Delete
       </button>
     </nav>
   );
@@ -60,9 +67,19 @@ function DetailScreen() {
     setImageScale(1);
   };
 
+  const handleDelete = () => {
+    const newPhotoList = [...photoList];
+    newPhotoList.splice(selectedIndex, 1);
+    navigate(-1, { state: { photoList: newPhotoList } });
+  };
+
   return (
     <div className="flex flex-col h-screen">
-      <NavBar onBack={handleBack} onResetZoom={handleResetZoom} />
+      <NavBar
+        onBack={handleBack}
+        onResetZoom={handleResetZoom}
+        onDelete={handleDelete}
+      />
       <div className="flex justify-center items-center flex-grow overflow-y-auto overflow-x-auto">
         {photo ? (
           <div className="relative">

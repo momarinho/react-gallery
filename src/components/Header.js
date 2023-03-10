@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { auth } from '../config/firebase';
+import { auth, storage } from '../config/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { ref, listAll, getDownloadURL, uploadBytes } from 'firebase/storage';
 
-function Header({ handleUpload }) {
+function Header() {
   const [user] = useAuthState(auth);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [photoList, setPhotoList] = useState([]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -26,23 +29,56 @@ function Header({ handleUpload }) {
     setShowLogoutModal(false);
   };
 
+  const handleUpload = async (e) => {
+    const files = e.target.files;
+    const uploadPromises = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = file.name;
+      const storageRef = ref(storage, `images/${fileName}`);
+      const uploadPromise = uploadBytes(storageRef, file)
+        .then(async () => {
+          const downloadUrl = await getDownloadURL(storageRef);
+          return downloadUrl;
+        })
+        .catch((error) => {
+          console.error('Error uploading file:', error);
+          return null;
+        });
+      uploadPromises.push(uploadPromise);
+    }
+
+    const urls = await Promise.all(uploadPromises);
+    setPhotoList((prevList) => [...prevList, ...urls.filter((url) => url)]);
+    setImageUrl(null);
+    window.location.reload();
+  };
+
   return (
     <div className="bg-gray-700 py-4 px-8 shadow-sm">
       <div className="flex justify-between items-center">
-        <label
-          htmlFor="file-upload"
-          className="px-4 py-2 bg-gray-800 text-white rounded-md cursor-pointer hover:bg-gray-700"
-        >
-          Upload Photos
-        </label>
-        <input
-          id="file-upload"
-          type="file"
-          accept="image/*"
-          multiple
-          className="hidden"
-          onChange={handleUpload}
-        />
+        <h1 className="text-2xl text-gray-100 hover:text-blue-200">
+          My Photo Gallery
+        </h1>
+        {user && (
+          <>
+            <label
+              htmlFor="file-upload"
+              className="px-4 py-2 bg-gray-800 text-white rounded-md cursor-pointer hover:bg-gray-700"
+            >
+              Upload Photos
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleUpload}
+            />
+          </>
+        )}
         {user ? (
           <img
             className="rounded-full ml-4 cursor-pointer w-10 h-10"

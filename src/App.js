@@ -2,11 +2,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PhotoGallery from './components/PhotoGallery';
 import DetailScreen from './components/DetailScreen';
 
-import './index.css'
+import './index.css';
 
 function App() {
   return (
-    <div className="App">
+    <div className="">
       <Router>
         <Routes>
           <Route path="/" element={<PhotoGallery />} />
