@@ -35,3 +35,6 @@ export { auth, storage };
 <p>The photo gallery displays all of the photos that have been uploaded to Firebase Storage. Click on a photo to view it in a larger size.</p>
 <p>Delete Photos</p>
 <p>To delete a photo, click the "Delete" button that appears when you hover over a photo. Confirm that you want to delete the photo when prompted.</p>
+
+<h1>Screenshot:</h1>
+<img src='./src/00.png' />
